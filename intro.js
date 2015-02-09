@@ -58,6 +58,8 @@
       showBullets: true,
       /* Show tour progress? */
       showProgress: false,
+      /* Show step number? */
+      showStepNumber: false,
       /* Scroll to highlighted element? */
       scrollToElement: true,
       /* Set the overlay opacity */
@@ -768,6 +770,7 @@
           tooltipLayer      = document.createElement('div'),
           tooltipTextLayer  = document.createElement('div'),
           bulletsLayer      = document.createElement('div'),
+          stepsNumberLayer  = document.createElement('div'),
           progressLayer     = document.createElement('div'),
           buttonsLayer      = document.createElement('div');
 
@@ -786,6 +789,32 @@
 
       tooltipTextLayer.className = 'introjs-tooltiptext';
       tooltipTextLayer.innerHTML = targetElement.intro;
+
+      stepsNumberLayer.className = 'introjs-steps-number';
+
+      if (this._options.showStepNumber === false) {
+        stepsNumberLayer.style.display = 'none';
+      }
+
+      var ulContainerStepsNumber = document.createElement('ul');
+
+      var liStepsNumberActive = document.createElement('li');
+      liStepsNumberActive.className = "intro-js-step-number-separator";
+      liStepsNumberActive.innerHTML = targetElement.step;
+
+      var liStepsNumberSeparator = document.createElement('li');
+      liStepsNumberSeparator.className = "intro-js-step-number-separator";
+      liStepsNumberSeparator.innerHTML = this._options.stepNumberSeparator || "|";
+
+      var liStepsNumberAmount = document.createElement('li');
+      liStepsNumberAmount.className = "intro-js-step-number-amount";
+      liStepsNumberAmount.innerHTML = this._introItems.length;
+
+      ulContainerStepsNumber.appendChild(liStepsNumberActive);
+      ulContainerStepsNumber.appendChild(liStepsNumberSeparator);
+      ulContainerStepsNumber.appendChild(liStepsNumberAmount);
+
+      stepsNumberLayer.appendChild(ulContainerStepsNumber);
 
       bulletsLayer.className = 'introjs-bullets';
 
@@ -834,6 +863,7 @@
 
       tooltipLayer.className = 'introjs-tooltip';
       tooltipLayer.appendChild(tooltipTextLayer);
+      tooltipLayer.appendChild(stepsNumberLayer);
       tooltipLayer.appendChild(bulletsLayer);
       tooltipLayer.appendChild(progressLayer);
 
