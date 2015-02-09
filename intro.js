@@ -694,6 +694,7 @@
           oldtooltipLayer      = oldReferenceLayer.querySelector('.introjs-tooltiptext'),
           oldArrowLayer        = oldReferenceLayer.querySelector('.introjs-arrow'),
           oldtooltipContainer  = oldReferenceLayer.querySelector('.introjs-tooltip'),
+          oldStepsNumberLayer  = oldReferenceLayer.querySelector('.introjs-stepNumberActive'),
           skipTooltipButton    = oldReferenceLayer.querySelector('.introjs-skipbutton'),
           prevTooltipButton    = oldReferenceLayer.querySelector('.introjs-prevbutton'),
           nextTooltipButton    = oldReferenceLayer.querySelector('.introjs-nextbutton');
@@ -737,6 +738,10 @@
         if (oldHelperNumberLayer != null) {
           oldHelperNumberLayer.innerHTML = targetElement.step;
         }
+
+        //set current step number
+        oldStepsNumberLayer.innerHTML = targetElement.step;
+
         //set current tooltip text
         oldtooltipLayer.innerHTML = targetElement.intro;
         //set the tooltip position
@@ -799,15 +804,15 @@
       var ulContainerStepsNumber = document.createElement('ul');
 
       var liStepsNumberActive = document.createElement('li');
-      liStepsNumberActive.className = "intro-js-step-number-separator";
+      liStepsNumberActive.className = "introjs-stepNumberActive";
       liStepsNumberActive.innerHTML = targetElement.step;
 
       var liStepsNumberSeparator = document.createElement('li');
-      liStepsNumberSeparator.className = "intro-js-step-number-separator";
+      liStepsNumberSeparator.className = "introjs-stepNumberSeparator";
       liStepsNumberSeparator.innerHTML = this._options.stepNumberSeparator || "|";
 
       var liStepsNumberAmount = document.createElement('li');
-      liStepsNumberAmount.className = "intro-js-step-number-amount";
+      liStepsNumberAmount.className = "introjs-stepNumberAmount";
       liStepsNumberAmount.innerHTML = this._introItems.length;
 
       ulContainerStepsNumber.appendChild(liStepsNumberActive);
