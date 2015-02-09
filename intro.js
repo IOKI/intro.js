@@ -801,25 +801,22 @@
         stepsNumberLayer.style.display = 'none';
       }
 
-      var ulContainerStepsNumber = document.createElement('ul');
-
-      var liStepsNumberActive = document.createElement('li');
+      var liStepsNumberActive = document.createElement('span');
       liStepsNumberActive.className = "introjs-stepNumberActive";
       liStepsNumberActive.innerHTML = targetElement.step;
 
-      var liStepsNumberSeparator = document.createElement('li');
+      var liStepsNumberSeparator = document.createElement('span');
       liStepsNumberSeparator.className = "introjs-stepNumberSeparator";
       liStepsNumberSeparator.innerHTML = this._options.stepNumberSeparator || "|";
 
-      var liStepsNumberAmount = document.createElement('li');
+      var liStepsNumberAmount = document.createElement('span');
       liStepsNumberAmount.className = "introjs-stepNumberAmount";
       liStepsNumberAmount.innerHTML = this._introItems.length;
 
-      ulContainerStepsNumber.appendChild(liStepsNumberActive);
-      ulContainerStepsNumber.appendChild(liStepsNumberSeparator);
-      ulContainerStepsNumber.appendChild(liStepsNumberAmount);
+      stepsNumberLayer.appendChild(liStepsNumberActive);
+      stepsNumberLayer.appendChild(liStepsNumberSeparator);
+      stepsNumberLayer.appendChild(liStepsNumberAmount);
 
-      stepsNumberLayer.appendChild(ulContainerStepsNumber);
 
       bulletsLayer.className = 'introjs-bullets';
 
