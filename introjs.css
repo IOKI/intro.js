@@ -113,6 +113,15 @@ tr.introjs-showElement > th {
   box-shadow: 0 2px 5px rgba(0,0,0,.4);
 }
 
+.introjs-steps-number {
+  display: block;
+  margin: 0 auto;
+}
+
+.introjs-steps-number li {
+  float: left;
+}
+
 .introjs-arrow {
   border: 5px solid white;
   content:'';
