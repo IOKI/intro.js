@@ -62,6 +62,12 @@
       showStepNumber: false,
       /* Scroll to highlighted element? */
       scrollToElement: true,
+      /* Force scroll to top */
+      forceScrollToTop: false,
+      /* Force scroll to top at window width */
+      forceScrollToTopForSize: false,
+      /* Force scroll to bottom */
+      forceScrollToBottom: false,
       /* Set the overlay opacity */
       overlayOpacity: 0.8,
       /* Precedence of positions, when auto is enabled */
@@ -996,7 +1002,7 @@
         bottom = rect.bottom - winHeight;
 
       //Scroll up
-      if (top < 0 || targetElement.element.clientHeight > winHeight) {
+      if ((top < 0 || targetElement.element.clientHeight > winHeight || this._options.forceScrollToTop === true || ( this._options.forceScrollToTopForSize !== false && winHeight < this._options.forceScrollToTopForSize )) && this._options.forceScrollToBottom === false) {
         window.scrollBy(0, top - 30); // 30px padding from edge to look nice
 
       //Scroll down
