@@ -238,8 +238,14 @@
       };
 
       self._onResize = function(e) {
+        var oldReferenceLayer = document.querySelector('.introjs-tooltipReferenceLayer'),
+          oldHelperNumberLayer = oldReferenceLayer.querySelector('.introjs-helperNumberLayer'),
+          oldArrowLayer        = oldReferenceLayer.querySelector('.introjs-arrow'),
+          oldtooltipContainer  = oldReferenceLayer.querySelector('.introjs-tooltip');
+
+        _placeTooltip.call(self, self._introItems[self._currentStep].element, oldtooltipContainer, oldArrowLayer, oldHelperNumberLayer);
         _setHelperLayerPosition.call(self, document.querySelector('.introjs-helperLayer'));
-        _setHelperLayerPosition.call(self, document.querySelector('.introjs-tooltipReferenceLayer'));
+        _setHelperLayerPosition.call(self, oldReferenceLayer);
       };
 
       if (window.addEventListener) {
