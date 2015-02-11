@@ -240,7 +240,8 @@
       };
 
       self._onResize = function(e) {
-        var oldReferenceLayer = document.querySelector('.introjs-tooltipReferenceLayer'),
+        var winWidth = _getWinSize().width,
+          oldReferenceLayer = document.querySelector('.introjs-tooltipReferenceLayer'),
           oldHelperNumberLayer = oldReferenceLayer.querySelector('.introjs-helperNumberLayer'),
           oldArrowLayer        = oldReferenceLayer.querySelector('.introjs-arrow'),
           oldtooltipContainer  = oldReferenceLayer.querySelector('.introjs-tooltip'),
