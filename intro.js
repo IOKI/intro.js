@@ -501,9 +501,9 @@
         currentTooltipPosition = _determineAutoPosition.call(this, targetElement, tooltipLayer, currentTooltipPosition)
       }
     }
-    var targetOffset = _getOffset(targetElement)
-    var tooltipHeight = _getOffset(tooltipLayer).height
-    var windowSize = _getWinSize()
+    var targetOffset = _getOffset(targetElement);
+    var tooltipHeight = _getOffset(tooltipLayer).height;
+    var windowSize = _getWinSize();
     switch (currentTooltipPosition) {
       case 'top':
         tooltipLayer.style.left = '15px';
@@ -520,7 +520,7 @@
           arrowLayer.className = "introjs-arrow left-bottom";
           tooltipLayer.style.top = "-" + (tooltipHeight - targetOffset.height - 20) + "px"
         }
-        
+
         break;
       case 'left':
         if (this._options.showStepNumbers == true) {
