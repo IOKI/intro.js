@@ -243,7 +243,12 @@
         var oldReferenceLayer = document.querySelector('.introjs-tooltipReferenceLayer'),
           oldHelperNumberLayer = oldReferenceLayer.querySelector('.introjs-helperNumberLayer'),
           oldArrowLayer        = oldReferenceLayer.querySelector('.introjs-arrow'),
-          oldtooltipContainer  = oldReferenceLayer.querySelector('.introjs-tooltip');
+          oldtooltipContainer  = oldReferenceLayer.querySelector('.introjs-tooltip'),
+          oldStepsNumberActive  = oldReferenceLayer.querySelector('.introjs-stepNumberActive'),
+          oldStepsNumberAmmount  = oldReferenceLayer.querySelector('.introjs-stepNumberAmount');
+
+        oldStepsNumberActive.innerHTML = _getActiveStepNumber.call(self, self._introItems, self._currentStep + 1);
+        oldStepsNumberAmmount.innerHTML = _getNumberOfElements.call(self, self._introItems);
 
         _placeTooltip.call(self, self._introItems[self._currentStep].element, oldtooltipContainer, oldArrowLayer, oldHelperNumberLayer);
         _setHelperLayerPosition.call(self, document.querySelector('.introjs-helperLayer'));
@@ -313,7 +318,7 @@
       ++this._currentStep;
     }
 
-    while (this._introItems[this._currentStep].skipOnMobile === true && this._options.mobileTresholdWidth !== false && winWidth < this._options.mobileTresholdWidth) {
+    while ((this._introItems.length > this._currentStep) && this._introItems[this._currentStep].skipOnMobile === true && this._options.mobileTresholdWidth !== false && winWidth < this._options.mobileTresholdWidth) {
       this._currentStep++;
     }
 
@@ -695,6 +700,49 @@
   }
 
   /**
+   * function return number of active step to display on label
+   * depending on skipOnMobile value
+   * @param introItems
+   * @param stepNumber
+   * @returns {*}
+   * @private
+   */
+  function _getActiveStepNumber(introItems, stepNumber) {
+    var winWidth = _getWinSize().width,
+      i = 0;
+
+    for (; i < stepNumber - 1; i++) {
+      if ( introItems[i].skipOnMobile === true && winWidth < this._options.mobileTresholdWidth ) {
+        stepNumber--;
+      }
+    }
+
+    return stepNumber;
+  }
+
+  /**
+   * function return number of all step to display on label
+   * depending on skipOnMobile value
+   * @param introItems
+   * @returns {*}
+   * @private
+   */
+  function _getNumberOfElements(introItems) {
+    var winWidth = _getWinSize().width,
+      introItemsLength = introItems.length,
+      counter = introItems.length,
+      i = 0;
+
+    for (; i < introItemsLength; i++) {
+      if ( introItems[i].skipOnMobile === true && winWidth < this._options.mobileTresholdWidth ) {
+        counter--;
+      }
+    }
+
+    return counter;
+  }
+
+  /**
    * Show an element on the page
    *
    * @api private
@@ -773,7 +821,7 @@
         }
 
         //set current step number
-        oldStepsNumberLayer.innerHTML = targetElement.step;
+        oldStepsNumberLayer.innerHTML = _getActiveStepNumber.call(self, self._introItems, targetElement.step);
 
         //set current tooltip text
         oldtooltipLayer.innerHTML = targetElement.intro;
@@ -836,7 +884,7 @@
 
       var liStepsNumberActive = document.createElement('span');
       liStepsNumberActive.className = "introjs-stepNumberActive";
-      liStepsNumberActive.innerHTML = targetElement.step;
+      liStepsNumberActive.innerHTML = _getActiveStepNumber.call(self, self._introItems, targetElement.step);
 
       var liStepsNumberSeparator = document.createElement('span');
       liStepsNumberSeparator.className = "introjs-stepNumberSeparator";
@@ -844,7 +892,7 @@
 
       var liStepsNumberAmount = document.createElement('span');
       liStepsNumberAmount.className = "introjs-stepNumberAmount";
-      liStepsNumberAmount.innerHTML = this._introItems.length;
+      liStepsNumberAmount.innerHTML = _getNumberOfElements.call(self, self._introItems);
 
       stepsNumberLayer.appendChild(liStepsNumberActive);
       stepsNumberLayer.appendChild(liStepsNumberSeparator);
