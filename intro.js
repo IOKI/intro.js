@@ -314,7 +314,7 @@
     }
 
     while (this._introItems[this._currentStep].skipOnMobile === true && this._options.mobileTresholdWidth !== false && winWidth < this._options.mobileTresholdWidth) {
-      ++this._currentStep;
+      this._currentStep++;
     }
 
     if ((this._introItems.length) <= this._currentStep) {
@@ -353,9 +353,9 @@
     --this._currentStep;
 
     while (this._introItems[this._currentStep].skipOnMobile === true && this._options.mobileTresholdWidth !== false && winWidth < this._options.mobileTresholdWidth) {
-      --this._currentStep;
+      this._currentStep--;
 
-      if (this._currentStep === 0) {
+      if (this._currentStep === -1) {
         return false;
       }
     }
