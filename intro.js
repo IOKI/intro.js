@@ -250,6 +250,10 @@
         oldStepsNumberActive.innerHTML = _getActiveStepNumber.call(self, self._introItems, self._currentStep + 1);
         oldStepsNumberAmmount.innerHTML = _getNumberOfElements.call(self, self._introItems);
 
+        if (self._introItems[self._currentStep].skipOnMobile === true && winWidth < self._options.mobileTresholdWidth) {
+          _nextStep.call(self);
+        }
+
         _placeTooltip.call(self, self._introItems[self._currentStep].element, oldtooltipContainer, oldArrowLayer, oldHelperNumberLayer);
         _setHelperLayerPosition.call(self, document.querySelector('.introjs-helperLayer'));
         _setHelperLayerPosition.call(self, oldReferenceLayer);
