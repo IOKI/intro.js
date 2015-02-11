@@ -68,6 +68,8 @@
       forceScrollToTopForSize: false,
       /* Force scroll to bottom */
       forceScrollToBottom: false,
+      /* Set mobile threshold */
+      mobileTresholdWidth: false,
       /* Set the overlay opacity */
       overlayOpacity: 0.8,
       /* Precedence of positions, when auto is enabled */
@@ -301,11 +303,17 @@
    * @method _nextStep
    */
   function _nextStep() {
+    var winWidth = _getWinSize().width;
+
     this._direction = 'forward';
 
     if (typeof (this._currentStep) === 'undefined') {
       this._currentStep = 0;
     } else {
+      ++this._currentStep;
+    }
+
+    while (this._introItems[this._currentStep].skipOnMobile === true && this._options.mobileTresholdWidth !== false && winWidth < this._options.mobileTresholdWidth) {
       ++this._currentStep;
     }
 
@@ -334,13 +342,26 @@
    * @method _nextStep
    */
   function _previousStep() {
+    var winWidth = _getWinSize().width;
+
     this._direction = 'backward';
 
     if (this._currentStep === 0) {
       return false;
     }
 
-    var nextStep = this._introItems[--this._currentStep];
+    --this._currentStep;
+
+    while (this._introItems[this._currentStep].skipOnMobile === true && this._options.mobileTresholdWidth !== false && winWidth < this._options.mobileTresholdWidth) {
+      --this._currentStep;
+
+      if (this._currentStep === 0) {
+        return false;
+      }
+    }
+
+
+    var nextStep = this._introItems[this._currentStep];
     if (typeof (this._introBeforeChangeCallback) !== 'undefined') {
       this._introBeforeChangeCallback.call(this, nextStep.element);
     }
@@ -1004,11 +1025,12 @@
     if (!_elementInViewport(targetElement.element) && this._options.scrollToElement === true) {
       var rect = targetElement.element.getBoundingClientRect(),
         winHeight = _getWinSize().height,
+        winWidth = _getWinSize().width,
         top = rect.bottom - (rect.bottom - rect.top),
         bottom = rect.bottom - winHeight;
 
       //Scroll up
-      if ((top < 0 || targetElement.element.clientHeight > winHeight || this._options.forceScrollToTop === true || ( this._options.forceScrollToTopForSize !== false && winHeight < this._options.forceScrollToTopForSize )) && this._options.forceScrollToBottom === false) {
+      if ((top < 0 || targetElement.element.clientHeight > winHeight || this._options.forceScrollToTop === true || ( this._options.forceScrollToTopForSize !== false && winWidth < this._options.forceScrollToTopForSize )) && this._options.forceScrollToBottom === false) {
         window.scrollBy(0, top - 30); // 30px padding from edge to look nice
 
       //Scroll down
