@@ -512,13 +512,15 @@
         break;
       case 'right':
         tooltipLayer.style.left = (_getOffset(targetElement).width + 20) + 'px';
+        arrowLayer.className = 'introjs-arrow left';
+
         if (targetOffset.top + tooltipHeight > windowSize.height) {
           // In this case, right would have fallen below the bottom of the screen.
           // Modify so that the bottom of the tooltip connects with the target
           arrowLayer.className = "introjs-arrow left-bottom";
           tooltipLayer.style.top = "-" + (tooltipHeight - targetOffset.height - 20) + "px"
         }
-        arrowLayer.className = 'introjs-arrow left';
+        
         break;
       case 'left':
         if (this._options.showStepNumbers == true) {
