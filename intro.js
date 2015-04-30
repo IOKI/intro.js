@@ -442,8 +442,10 @@
     //clean listeners
     if (window.removeEventListener) {
       window.removeEventListener('keydown', this._onKeyDown, true);
+      window.removeEventListener('resize', this._onResize, true);
     } else if (document.detachEvent) { //IE
       document.detachEvent('onkeydown', this._onKeyDown);
+      document.attachEvent('onresize', this._onResize);
     }
 
     //set the step to zero
