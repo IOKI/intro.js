@@ -120,7 +120,7 @@
           currentItem.position = 'floating';
         }
 
-        if (currentItem.element != null) {
+        if (currentItem.element != null && window.getComputedStyle(currentItem.element).display !== 'none') {
           introItems.push(currentItem);
         }
       }
