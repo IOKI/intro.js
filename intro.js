@@ -251,7 +251,7 @@
         oldStepsNumberActive.innerHTML = _getActiveStepNumber.call(self, self._introItems, self._currentStep + 1);
         oldStepsNumberAmmount.innerHTML = _getNumberOfElements.call(self, self._introItems);
 
-        if (self._introItems[self._currentStep].skipOnMobile === true && winWidth < self._options.mobileTresholdWidth) {
+        if ((self._introItems[self._currentStep].skipOnMobile === true && winWidth < self._options.mobileTresholdWidth) || (window.getComputedStyle(self._introItems[self._currentStep].element).display === 'none')) {
           _nextStep.call(self);
         }
 
@@ -323,7 +323,7 @@
       ++this._currentStep;
     }
 
-    while ((this._introItems.length > this._currentStep) && this._introItems[this._currentStep].skipOnMobile === true && this._options.mobileTresholdWidth !== false && winWidth < this._options.mobileTresholdWidth) {
+    while ((this._introItems.length > this._currentStep) && (this._introItems[this._currentStep].skipOnMobile === true && this._options.mobileTresholdWidth !== false && winWidth < this._options.mobileTresholdWidth) || (window.getComputedStyle(this._introItems[this._currentStep].element).display === 'none')) {
       this._currentStep++;
     }
 
@@ -362,7 +362,7 @@
 
     --this._currentStep;
 
-    while (this._introItems[this._currentStep].skipOnMobile === true && this._options.mobileTresholdWidth !== false && winWidth < this._options.mobileTresholdWidth) {
+    while ((this._introItems[this._currentStep].skipOnMobile === true && this._options.mobileTresholdWidth !== false && winWidth < this._options.mobileTresholdWidth) || (window.getComputedStyle(this._introItems[this._currentStep].element).display === 'none')) {
       this._currentStep--;
 
       if (this._currentStep === -1) {
@@ -721,7 +721,7 @@
       i = 0;
 
     for (; i < stepNumber - 1; i++) {
-      if ( introItems[i].skipOnMobile === true && winWidth < this._options.mobileTresholdWidth ) {
+      if ( (introItems[i].skipOnMobile === true && winWidth < this._options.mobileTresholdWidth) || (window.getComputedStyle(introItems[i].element).display === 'none')) {
         stepNumber--;
       }
     }
@@ -743,7 +743,7 @@
       i = 0;
 
     for (; i < introItemsLength; i++) {
-      if ( introItems[i].skipOnMobile === true && winWidth < this._options.mobileTresholdWidth ) {
+      if ( (introItems[i].skipOnMobile === true && winWidth < this._options.mobileTresholdWidth) || (window.getComputedStyle(introItems[i].element).display === 'none') ) {
         counter--;
       }
     }
@@ -1339,6 +1339,10 @@
     refresh: function() {
       _setHelperLayerPosition.call(this, document.querySelector('.introjs-helperLayer'));
       _setHelperLayerPosition.call(this, document.querySelector('.introjs-tooltipReferenceLayer'));
+      return this;
+    },
+    reload: function () {
+      this._onResize()
       return this;
     },
     onbeforechange: function(providedCallback) {
