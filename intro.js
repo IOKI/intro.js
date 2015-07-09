@@ -58,8 +58,18 @@
       showBullets: true,
       /* Show tour progress? */
       showProgress: false,
+      /* Show step number? */
+      showStepNumber: false,
       /* Scroll to highlighted element? */
       scrollToElement: true,
+      /* Force scroll to top */
+      forceScrollToTop: false,
+      /* Force scroll to top at window width */
+      forceScrollToTopForSize: false,
+      /* Force scroll to bottom */
+      forceScrollToBottom: false,
+      /* Set mobile threshold */
+      mobileTresholdWidth: false,
       /* Set the overlay opacity */
       overlayOpacity: 0.8,
       /* Precedence of positions, when auto is enabled */
@@ -110,7 +120,7 @@
           currentItem.position = 'floating';
         }
 
-        if (currentItem.element != null) {
+        if (currentItem.element != null && window.getComputedStyle(currentItem.element).display !== 'none') {
           introItems.push(currentItem);
         }
       }
@@ -230,8 +240,24 @@
       };
 
       self._onResize = function(e) {
+        var winWidth = _getWinSize().width,
+          oldReferenceLayer = document.querySelector('.introjs-tooltipReferenceLayer'),
+          oldHelperNumberLayer = oldReferenceLayer.querySelector('.introjs-helperNumberLayer'),
+          oldArrowLayer        = oldReferenceLayer.querySelector('.introjs-arrow'),
+          oldtooltipContainer  = oldReferenceLayer.querySelector('.introjs-tooltip'),
+          oldStepsNumberActive  = oldReferenceLayer.querySelector('.introjs-stepNumberActive'),
+          oldStepsNumberAmmount  = oldReferenceLayer.querySelector('.introjs-stepNumberAmount');
+
+        oldStepsNumberActive.innerHTML = _getActiveStepNumber.call(self, self._introItems, self._currentStep + 1);
+        oldStepsNumberAmmount.innerHTML = _getNumberOfElements.call(self, self._introItems);
+
+        if ((self._introItems[self._currentStep].skipOnMobile === true && winWidth < self._options.mobileTresholdWidth) || (window.getComputedStyle(self._introItems[self._currentStep].element).display === 'none')) {
+          _nextStep.call(self);
+        }
+
+        _placeTooltip.call(self, self._introItems[self._currentStep].element, oldtooltipContainer, oldArrowLayer, oldHelperNumberLayer);
         _setHelperLayerPosition.call(self, document.querySelector('.introjs-helperLayer'));
-        _setHelperLayerPosition.call(self, document.querySelector('.introjs-tooltipReferenceLayer'));
+        _setHelperLayerPosition.call(self, oldReferenceLayer);
       };
 
       if (window.addEventListener) {
@@ -287,12 +313,18 @@
    * @method _nextStep
    */
   function _nextStep() {
+    var winWidth = _getWinSize().width;
+
     this._direction = 'forward';
 
     if (typeof (this._currentStep) === 'undefined') {
       this._currentStep = 0;
     } else {
       ++this._currentStep;
+    }
+
+    while ((this._introItems.length > this._currentStep) && (this._introItems[this._currentStep].skipOnMobile === true && this._options.mobileTresholdWidth !== false && winWidth < this._options.mobileTresholdWidth) || (window.getComputedStyle(this._introItems[this._currentStep].element).display === 'none')) {
+      this._currentStep++;
     }
 
     if ((this._introItems.length) <= this._currentStep) {
@@ -320,13 +352,26 @@
    * @method _nextStep
    */
   function _previousStep() {
+    var winWidth = _getWinSize().width;
+
     this._direction = 'backward';
 
     if (this._currentStep === 0) {
       return false;
     }
 
-    var nextStep = this._introItems[--this._currentStep];
+    --this._currentStep;
+
+    while ((this._introItems[this._currentStep].skipOnMobile === true && this._options.mobileTresholdWidth !== false && winWidth < this._options.mobileTresholdWidth) || (window.getComputedStyle(this._introItems[this._currentStep].element).display === 'none')) {
+      this._currentStep--;
+
+      if (this._currentStep === -1) {
+        return false;
+      }
+    }
+
+
+    var nextStep = this._introItems[this._currentStep];
     if (typeof (this._introBeforeChangeCallback) !== 'undefined') {
       this._introBeforeChangeCallback.call(this, nextStep.element);
     }
@@ -397,8 +442,10 @@
     //clean listeners
     if (window.removeEventListener) {
       window.removeEventListener('keydown', this._onKeyDown, true);
+      window.removeEventListener('resize', this._onResize, true);
     } else if (document.detachEvent) { //IE
       document.detachEvent('onkeydown', this._onKeyDown);
+      document.attachEvent('onresize', this._onResize);
     }
 
     //set the step to zero
@@ -457,9 +504,9 @@
         currentTooltipPosition = _determineAutoPosition.call(this, targetElement, tooltipLayer, currentTooltipPosition)
       }
     }
-    var targetOffset = _getOffset(targetElement)
-    var tooltipHeight = _getOffset(tooltipLayer).height
-    var windowSize = _getWinSize()
+    var targetOffset = _getOffset(targetElement);
+    var tooltipHeight = _getOffset(tooltipLayer).height;
+    var windowSize = _getWinSize();
     switch (currentTooltipPosition) {
       case 'top':
         tooltipLayer.style.left = '15px';
@@ -468,13 +515,15 @@
         break;
       case 'right':
         tooltipLayer.style.left = (_getOffset(targetElement).width + 20) + 'px';
+        arrowLayer.className = 'introjs-arrow left';
+
         if (targetOffset.top + tooltipHeight > windowSize.height) {
           // In this case, right would have fallen below the bottom of the screen.
           // Modify so that the bottom of the tooltip connects with the target
           arrowLayer.className = "introjs-arrow left-bottom";
           tooltipLayer.style.top = "-" + (tooltipHeight - targetOffset.height - 20) + "px"
         }
-        arrowLayer.className = 'introjs-arrow left';
+
         break;
       case 'left':
         if (this._options.showStepNumbers == true) {
@@ -660,6 +709,49 @@
   }
 
   /**
+   * function return number of active step to display on label
+   * depending on skipOnMobile value
+   * @param introItems
+   * @param stepNumber
+   * @returns {*}
+   * @private
+   */
+  function _getActiveStepNumber(introItems, stepNumber) {
+    var winWidth = _getWinSize().width,
+      i = 0;
+
+    for (; i < stepNumber - 1; i++) {
+      if ( (introItems[i].skipOnMobile === true && winWidth < this._options.mobileTresholdWidth) || (window.getComputedStyle(introItems[i].element).display === 'none')) {
+        stepNumber--;
+      }
+    }
+
+    return stepNumber;
+  }
+
+  /**
+   * function return number of all step to display on label
+   * depending on skipOnMobile value
+   * @param introItems
+   * @returns {*}
+   * @private
+   */
+  function _getNumberOfElements(introItems) {
+    var winWidth = _getWinSize().width,
+      introItemsLength = introItems.length,
+      counter = introItems.length,
+      i = 0;
+
+    for (; i < introItemsLength; i++) {
+      if ( (introItems[i].skipOnMobile === true && winWidth < this._options.mobileTresholdWidth) || (window.getComputedStyle(introItems[i].element).display === 'none') ) {
+        counter--;
+      }
+    }
+
+    return counter;
+  }
+
+  /**
    * Show an element on the page
    *
    * @api private
@@ -692,6 +784,7 @@
           oldtooltipLayer      = oldReferenceLayer.querySelector('.introjs-tooltiptext'),
           oldArrowLayer        = oldReferenceLayer.querySelector('.introjs-arrow'),
           oldtooltipContainer  = oldReferenceLayer.querySelector('.introjs-tooltip'),
+          oldStepsNumberLayer  = oldReferenceLayer.querySelector('.introjs-stepNumberActive'),
           skipTooltipButton    = oldReferenceLayer.querySelector('.introjs-skipbutton'),
           prevTooltipButton    = oldReferenceLayer.querySelector('.introjs-prevbutton'),
           nextTooltipButton    = oldReferenceLayer.querySelector('.introjs-nextbutton');
@@ -735,6 +828,10 @@
         if (oldHelperNumberLayer != null) {
           oldHelperNumberLayer.innerHTML = targetElement.step;
         }
+
+        //set current step number
+        oldStepsNumberLayer.innerHTML = _getActiveStepNumber.call(self, self._introItems, targetElement.step);
+
         //set current tooltip text
         oldtooltipLayer.innerHTML = targetElement.intro;
         //set the tooltip position
@@ -768,6 +865,7 @@
           tooltipLayer      = document.createElement('div'),
           tooltipTextLayer  = document.createElement('div'),
           bulletsLayer      = document.createElement('div'),
+          stepsNumberLayer  = document.createElement('div'),
           progressLayer     = document.createElement('div'),
           buttonsLayer      = document.createElement('div');
 
@@ -786,6 +884,29 @@
 
       tooltipTextLayer.className = 'introjs-tooltiptext';
       tooltipTextLayer.innerHTML = targetElement.intro;
+
+      stepsNumberLayer.className = 'introjs-steps-number';
+
+      if (this._options.showStepNumber === false) {
+        stepsNumberLayer.style.display = 'none';
+      }
+
+      var liStepsNumberActive = document.createElement('span');
+      liStepsNumberActive.className = "introjs-stepNumberActive";
+      liStepsNumberActive.innerHTML = _getActiveStepNumber.call(self, self._introItems, targetElement.step);
+
+      var liStepsNumberSeparator = document.createElement('span');
+      liStepsNumberSeparator.className = "introjs-stepNumberSeparator";
+      liStepsNumberSeparator.innerHTML = this._options.stepNumberSeparator || "|";
+
+      var liStepsNumberAmount = document.createElement('span');
+      liStepsNumberAmount.className = "introjs-stepNumberAmount";
+      liStepsNumberAmount.innerHTML = _getNumberOfElements.call(self, self._introItems);
+
+      stepsNumberLayer.appendChild(liStepsNumberActive);
+      stepsNumberLayer.appendChild(liStepsNumberSeparator);
+      stepsNumberLayer.appendChild(liStepsNumberAmount);
+
 
       bulletsLayer.className = 'introjs-bullets';
 
@@ -834,6 +955,7 @@
 
       tooltipLayer.className = 'introjs-tooltip';
       tooltipLayer.appendChild(tooltipTextLayer);
+      tooltipLayer.appendChild(stepsNumberLayer);
       tooltipLayer.appendChild(bulletsLayer);
       tooltipLayer.appendChild(progressLayer);
 
@@ -949,8 +1071,10 @@
       //More detail: https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Understanding_z_index/The_stacking_context
       var zIndex = _getPropValue(parentElm, 'z-index');
       var opacity = parseFloat(_getPropValue(parentElm, 'opacity'));
+      var transition = _getPropValue(parentElm, 'transition');
+
       var transform = _getPropValue(parentElm, 'transform') || _getPropValue(parentElm, '-webkit-transform') || _getPropValue(parentElm, '-moz-transform') || _getPropValue(parentElm, '-ms-transform') || _getPropValue(parentElm, '-o-transform');
-      if (/[0-9]+/.test(zIndex) || opacity < 1 || transform !== 'none') {
+      if ((/[0-9]+/.test(zIndex) && opacity == 1 )|| (opacity < 1 &&  !/opacity|all/g.test(transition)) || transform !== 'none') {
         parentElm.className += ' introjs-fixParent';
       }
 
@@ -960,11 +1084,12 @@
     if (!_elementInViewport(targetElement.element) && this._options.scrollToElement === true) {
       var rect = targetElement.element.getBoundingClientRect(),
         winHeight = _getWinSize().height,
+        winWidth = _getWinSize().width,
         top = rect.bottom - (rect.bottom - rect.top),
         bottom = rect.bottom - winHeight;
 
       //Scroll up
-      if (top < 0 || targetElement.element.clientHeight > winHeight) {
+      if ((top < 0 || targetElement.element.clientHeight > winHeight || this._options.forceScrollToTop === true || ( this._options.forceScrollToTopForSize !== false && winWidth < this._options.forceScrollToTopForSize )) && this._options.forceScrollToBottom === false) {
         window.scrollBy(0, top - 30); // 30px padding from edge to look nice
 
       //Scroll down
@@ -1214,6 +1339,10 @@
     refresh: function() {
       _setHelperLayerPosition.call(this, document.querySelector('.introjs-helperLayer'));
       _setHelperLayerPosition.call(this, document.querySelector('.introjs-tooltipReferenceLayer'));
+      return this;
+    },
+    reload: function () {
+      this._onResize()
       return this;
     },
     onbeforechange: function(providedCallback) {
