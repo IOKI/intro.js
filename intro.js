@@ -240,24 +240,27 @@
       };
 
       self._onResize = function(e) {
-        var winWidth = _getWinSize().width,
-          oldReferenceLayer = document.querySelector('.introjs-tooltipReferenceLayer'),
-          oldHelperNumberLayer = oldReferenceLayer.querySelector('.introjs-helperNumberLayer'),
-          oldArrowLayer        = oldReferenceLayer.querySelector('.introjs-arrow'),
-          oldtooltipContainer  = oldReferenceLayer.querySelector('.introjs-tooltip'),
-          oldStepsNumberActive  = oldReferenceLayer.querySelector('.introjs-stepNumberActive'),
-          oldStepsNumberAmmount  = oldReferenceLayer.querySelector('.introjs-stepNumberAmount');
+        var oldReferenceLayer = document.querySelector('.introjs-tooltipReferenceLayer');
 
-        oldStepsNumberActive.innerHTML = _getActiveStepNumber.call(self, self._introItems, self._currentStep + 1);
-        oldStepsNumberAmmount.innerHTML = _getNumberOfElements.call(self, self._introItems);
+        if (oldReferenceLayer !== null && oldReferenceLayer !== undefined) {
+          var winWidth = _getWinSize().width,
+            oldHelperNumberLayer = oldReferenceLayer.querySelector('.introjs-helperNumberLayer'),
+            oldArrowLayer        = oldReferenceLayer.querySelector('.introjs-arrow'),
+            oldtooltipContainer  = oldReferenceLayer.querySelector('.introjs-tooltip'),
+            oldStepsNumberActive  = oldReferenceLayer.querySelector('.introjs-stepNumberActive'),
+            oldStepsNumberAmmount  = oldReferenceLayer.querySelector('.introjs-stepNumberAmount');
 
-        if ((self._introItems[self._currentStep].skipOnMobile === true && winWidth < self._options.mobileTresholdWidth) || (window.getComputedStyle(self._introItems[self._currentStep].element).display === 'none')) {
-          _nextStep.call(self);
+          oldStepsNumberActive.innerHTML = _getActiveStepNumber.call(self, self._introItems, self._currentStep + 1);
+          oldStepsNumberAmmount.innerHTML = _getNumberOfElements.call(self, self._introItems);
+
+          if ((self._introItems[self._currentStep].skipOnMobile === true && winWidth < self._options.mobileTresholdWidth) || (window.getComputedStyle(self._introItems[self._currentStep].element).display === 'none')) {
+            _nextStep.call(self);
+          }
+
+          _placeTooltip.call(self, self._introItems[self._currentStep].element, oldtooltipContainer, oldArrowLayer, oldHelperNumberLayer);
+          _setHelperLayerPosition.call(self, document.querySelector('.introjs-helperLayer'));
+          _setHelperLayerPosition.call(self, oldReferenceLayer);
         }
-
-        _placeTooltip.call(self, self._introItems[self._currentStep].element, oldtooltipContainer, oldArrowLayer, oldHelperNumberLayer);
-        _setHelperLayerPosition.call(self, document.querySelector('.introjs-helperLayer'));
-        _setHelperLayerPosition.call(self, oldReferenceLayer);
       };
 
       if (window.addEventListener) {
