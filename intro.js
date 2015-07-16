@@ -326,7 +326,13 @@
       ++this._currentStep;
     }
 
-    while ((this._introItems.length > this._currentStep) && (this._introItems[this._currentStep].skipOnMobile === true && this._options.mobileTresholdWidth !== false && winWidth < this._options.mobileTresholdWidth) || (window.getComputedStyle(this._introItems[this._currentStep].element).display === 'none')) {
+    while (
+    (this._introItems.length > this._currentStep) &&
+    (this._introItems[this._currentStep].skipOnMobile === true &&
+    this._options.mobileTresholdWidth !== false &&
+    winWidth < this._options.mobileTresholdWidth) ||
+    ((this._introItems.length > this._currentStep) && window.getComputedStyle(this._introItems[this._currentStep].element).display === 'none')
+    ) {
       this._currentStep++;
     }
 
